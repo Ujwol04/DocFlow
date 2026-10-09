@@ -1,5 +1,5 @@
 import { useState, useRef } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { ArrowLeft, Save, Trash2, Plus, Upload, FileText, Zap } from "lucide-react"
 import { Button } from "@Components/ui/Button"
 import { Input } from "@Components/ui/Input"
@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@Components/ui/Select"
 import { useDocFlowStore } from "@/store/DocFlowStore"
-import type { DocTemplate, TemplateCategory, TemplateField } from "@Types/types"
+import type { TemplateCategory, TemplateField } from "@Types/types"
 
 const CATEGORIES: TemplateCategory[] = ["Invoice", "Letter", "Report", "Other"]
 
@@ -23,20 +23,31 @@ function slugify(text: string) {
     .replace(/(^_|_$)/g, "")
 }
 
-export default function EditTemplate() {
-  const { id } = useParams()
+interface Draft {
+  name: string
+  category: TemplateCategory
+  description: string
+  content: string
+  docxFileName?: string
+  fields: TemplateField[]
+}
+
+const EMPTY_DRAFT: Draft = {
+  name: "",
+  category: "Invoice",
+  description: "",
+  content: "",
+  docxFileName: undefined,
+  fields: [],
+}
+
+export default function NewTemplate() {
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const templates = useDocFlowStore((s) => s.templates)
-  const updateTemplate = useDocFlowStore((s) => s.updateTemplate)
+  const addTemplate = useDocFlowStore((s) => s.addTemplate)
 
-  const original = templates.find((t) => t.id === id)
-  const [draft, setDraft] = useState<DocTemplate | null>(original ?? null)
-
-  if (!draft) {
-    return <div className="p-6 text-sm text-muted-foreground">Template not found.</div>
-  }
+  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT)
 
   const updateFieldAt = (index: number, patch: Partial<TemplateField>) => {
     setDraft({
@@ -64,13 +75,17 @@ export default function EditTemplate() {
   }
 
   const handleSave = () => {
-    updateTemplate(draft.id, {
+    if (!draft.name.trim()) return
+    addTemplate({
       name: draft.name,
       category: draft.category,
       description: draft.description,
       content: draft.content,
       docxFileName: draft.docxFileName,
-      fields: draft.fields,
+      fields: draft.fields.map((f) => ({
+        ...f,
+        key: f.key.trim() || slugify(f.label),
+      })),
     })
     navigate("/templates")
   }
@@ -87,7 +102,7 @@ export default function EditTemplate() {
             <ArrowLeft className="size-5" />
           </button>
           <div>
-            <h1 className="text-lg font-bold">Edit Template</h1>
+            <h1 className="text-lg font-bold">New Template</h1>
             <p className="text-sm text-muted-foreground">
               Write your document and mark dynamic spots with{" "}
               <code className="rounded bg-muted px-1">{"{{field}}"}</code>
@@ -96,7 +111,9 @@ export default function EditTemplate() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => navigate("/templates")}>Cancel</Button>
-          <Button onClick={handleSave}><Save className="size-4" /> Save</Button>
+          <Button onClick={handleSave} disabled={!draft.name.trim()}>
+            <Save className="size-4" /> Save
+          </Button>
         </div>
       </div>
 
@@ -110,6 +127,7 @@ export default function EditTemplate() {
                 <Input
                   value={draft.name}
                   onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                  placeholder="e.g. Freelance Invoice"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -118,7 +136,7 @@ export default function EditTemplate() {
                   value={draft.category}
                   onValueChange={(v) => setDraft({ ...draft, category: v as TemplateCategory })}
                 >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="e.g. Finance" /></SelectTrigger>
                   <SelectContent>
                     {CATEGORIES.map((c) => (
                       <SelectItem key={c} value={c}>{c}</SelectItem>
@@ -132,6 +150,7 @@ export default function EditTemplate() {
               <Input
                 value={draft.description}
                 onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+                placeholder="Short summary of when to use this template"
               />
             </div>
           </div>
@@ -175,9 +194,10 @@ export default function EditTemplate() {
             </div>
             <textarea
               className="min-h-64 w-full rounded-lg border bg-transparent p-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-              value={draft.content ?? ""}
+              value={draft.content}
               onChange={(e) => setDraft({ ...draft, content: e.target.value })}
               disabled={!!draft.docxFileName}
+              placeholder="Write your document content here..."
             />
           </div>
         </div>
@@ -193,57 +213,62 @@ export default function EditTemplate() {
             </Button>
           </div>
 
-          {draft.fields.map((field, index) => (
-            <div key={index} className="rounded-xl border p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{`{{${field.key}}}`}</code>
-                <button
-                  type="button"
-                  onClick={() => removeFieldAt(index)}
-                  className="text-muted-foreground hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </button>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Input
-                  value={field.key}
-                  onChange={(e) => updateFieldAt(index, { key: slugify(e.target.value) })}
-                  placeholder="field_key"
-                />
-                <Input
-                  value={field.label}
-                  onChange={(e) => updateFieldAt(index, { label: e.target.value })}
-                  placeholder="Field label"
-                />
-                <select
-                  className="rounded-lg border bg-transparent px-2.5 py-1.5 text-sm"
-                  value={field.type}
-                  onChange={(e) =>
-                    updateFieldAt(index, { type: e.target.value as TemplateField["type"] })
-                  }
-                >
-                  <option value="text">Short text</option>
-                  <option value="date">Date</option>
-                </select>
-                <Input
-                  value={field.defaultValue ?? ""}
-                  onChange={(e) => updateFieldAt(index, { defaultValue: e.target.value })}
-                  placeholder="Default value (optional)"
-                />
-                <button
-                  type="button"
-                  onClick={() => insertIntoDocument(field)}
-                  className="mt-1 flex items-center justify-center gap-1 text-sm font-medium hover:underline"
-                >
-                  <Plus className="size-3.5" /> Insert into document
-                </button>
-              </div>
+          {draft.fields.length === 0 ? (
+            <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed p-10 text-center">
+              <Zap className="size-5 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                No dynamic fields yet. Add one to mark a placeholder in your document.
+              </p>
             </div>
-          ))}
-
-          {draft.fields.length === 0 && (
-            <p className="text-sm text-muted-foreground">No fields yet. Click "Add" to create one.</p>
+          ) : (
+            draft.fields.map((field, index) => (
+              <div key={index} className="rounded-xl border p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{`{{${field.key}}}`}</code>
+                  <button
+                    type="button"
+                    onClick={() => removeFieldAt(index)}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Input
+                    value={field.key}
+                    onChange={(e) => updateFieldAt(index, { key: slugify(e.target.value) })}
+                    placeholder="field_key"
+                  />
+                  <Input
+                    value={field.label}
+                    onChange={(e) => updateFieldAt(index, { label: e.target.value })}
+                    placeholder="Field label"
+                  />
+                  <select
+                    className="rounded-lg border bg-transparent px-2.5 py-1.5 text-sm"
+                    value={field.type}
+                    onChange={(e) =>
+                      updateFieldAt(index, { type: e.target.value as TemplateField["type"] })
+                    }
+                  >
+                    <option value="text">Short text</option>
+                    <option value="date">Date</option>
+                  </select>
+                  <Input
+                    value={field.defaultValue ?? ""}
+                    onChange={(e) => updateFieldAt(index, { defaultValue: e.target.value })}
+                    placeholder="Default value (optional)"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => insertIntoDocument(field)}
+                    className="mt-1 flex items-center justify-center gap-1 text-sm font-medium hover:underline"
+                  >
+                    <Plus className="size-3.5" /> Insert into document
+                  </button>
+                </div>
+              </div>
+            ))
           )}
         </div>
       </div>

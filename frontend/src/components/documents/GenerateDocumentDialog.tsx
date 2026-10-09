@@ -8,7 +8,7 @@ import {
 } from "@Components/ui/Dialog"
 import { Button } from "@Components/ui/Button"
 import { Input } from "@Components/ui/Input"
-import { useAbcStore } from "@/store/abcStore"
+import { useDocFlowStore } from "@/store/DocFlowStore"
 import type { DocTemplate } from "@Types/types.ts"
 
 interface Props {
@@ -39,7 +39,7 @@ interface FormProps {
 }
 
 function GenerateDocumentForm({ template, onOpenChange }: FormProps) {
-  const generateDocument = useAbcStore((s) => s.generateDocument)
+  const generateDocument = useDocFlowStore((s) => s.generateDocument)
   const [values, setValues] = useState<Record<string, string>>({})
   const [step, setStep] = useState<"form" | "preview">("form")
 

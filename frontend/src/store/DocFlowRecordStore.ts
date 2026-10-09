@@ -1,14 +1,14 @@
 import { create } from "zustand"
-import type { AbcRecord } from "@Types/types"
+import type { DocFlowRecord } from "@Types/types"
 
-type AbcRecordStore = {
-  records: AbcRecord[]
+type DocFlowRecordStore = {
+  records: DocFlowRecord[]
   addRecord: (r: { name: string; description: string }) => void
-  updateRecord: (id: string, patch: Partial<Omit<AbcRecord, "id">>) => void
+  updateRecord: (id: string, patch: Partial<Omit<DocFlowRecord, "id">>) => void
   deleteRecord: (id: string) => void
 }
 
-export const useAbcRecordStore = create<AbcRecordStore>((set) => ({
+export const useDocFlowRecordStore = create<DocFlowRecordStore>((set) => ({
   records: [],
 
   addRecord: (r) =>
@@ -16,7 +16,7 @@ export const useAbcRecordStore = create<AbcRecordStore>((set) => ({
       records: [
         {
           ...r,
-          id: `abc${Date.now()}`,
+          id: `DocFlow${Date.now()}`,
           createdAt: new Date().toISOString().slice(0, 10),
           updatedAt: new Date().toISOString().slice(0, 10),
         },

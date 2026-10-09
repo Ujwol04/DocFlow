@@ -75,7 +75,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="p-4 flex items-center h-20 justify-center sticky top-2 bg-sidebar z-20 border-b border-sidebar-border">
             <div className="text-lg font-semibold text-sidebar-foreground">
-              abc
+              DocFlow
             </div>
           </SidebarGroupLabel>
           <SidebarGroupContent className="flex flex-col gap-2 p-2">
@@ -167,7 +167,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-4 flex items-center justify-center">
         <div className="text-sm font-semibold text-sidebar-foreground">
-           abc-v1
+           DocFlow-v1
         </div>
       </SidebarFooter>
     </Sidebar>

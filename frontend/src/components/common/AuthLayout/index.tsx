@@ -64,7 +64,7 @@ export default function Layout() {
                     <span className="font-semibold text-left">
                       {user?.name ?? "Guest"}
                     </span>
-                    <span className="text-left text-accent">
+                    <span className="text-left text-muted-foreground">
                       {user?.email ?? ""}
                     </span>
                   </section>

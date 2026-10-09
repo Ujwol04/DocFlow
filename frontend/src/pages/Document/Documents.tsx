@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@Components/index";
-import { useAbcStore } from "@/store/abcStore";
+import { useDocFlowStore } from "@/store/DocFlowStore";
 import ViewDocumentDialog from "@Components/documents/ViewDocumentDialog";
 import type { GeneratedDocument } from "@Types/types";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
@@ -33,16 +33,16 @@ const CATEGORY_LABEL: Record<string, string> = {
 };
 
 const LETTERHEAD = {
-  name: "ABC",
+  name: "DocFlow",
   tagline: "Reusable documents with dynamic fields",
   address: "Kathmandu, Nepal",
 };
 
 export default function Documents() {
   const navigate = useNavigate();
-  const documents = useAbcStore((s) => s.documents);
-  const templates = useAbcStore((s) => s.templates);
-  const deleteDocument = useAbcStore((s) => s.deleteDocument);
+  const documents = useDocFlowStore((s) => s.documents);
+  const templates = useDocFlowStore((s) => s.templates);
+  const deleteDocument = useDocFlowStore((s) => s.deleteDocument);
   const [query, setQuery] = useState("");
   const [viewTarget, setViewTarget] = useState<GeneratedDocument | null>(null);
 

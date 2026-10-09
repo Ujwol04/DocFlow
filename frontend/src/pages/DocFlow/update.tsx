@@ -4,13 +4,13 @@ import PageHeader from "@Components/common/PageHeader"
 import { Button } from "@Components/ui/Button"
 import { Input } from "@Components/ui/Input"
 import { Pencil } from "lucide-react"
-import { useAbcRecordStore } from "@/store/ABCRecordStore"
+import { useDocFlowRecordStore } from "@/store/DocFlowRecordStore"
 
-export default function UpdateAbc() {
+export default function UpdateDocFlow() {
   const navigate = useNavigate()
   const { id } = useParams()
-  const records = useAbcRecordStore((s) => s.records)
-  const updateRecord = useAbcRecordStore((s) => s.updateRecord)
+  const records = useDocFlowRecordStore((s) => s.records)
+  const updateRecord = useDocFlowRecordStore((s) => s.updateRecord)
 
   const original = records.find((r) => r.id === id)
   const [name, setName] = useState(original?.name ?? "")
@@ -23,7 +23,7 @@ export default function UpdateAbc() {
   const handleUpdate = () => {
     if (!name.trim()) return
     updateRecord(id!, { name, description })
-    navigate("/abc")
+    navigate("/DocFlow")
   }
 
   return (
@@ -51,7 +51,7 @@ export default function UpdateAbc() {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate("/abc")}>Cancel</Button>
+          <Button variant="outline" onClick={() => navigate("/DocFlow")}>Cancel</Button>
           <Button onClick={handleUpdate}>Save changes</Button>
         </div>
       </div>

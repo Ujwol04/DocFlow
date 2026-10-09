@@ -6,7 +6,7 @@ import { Card } from "@Components/ui/Card"
 import { Badge } from "@Components/ui/Badge"
 import { Button } from "@Components/ui/Button"
 import { cn } from "@Utils/cn"
-import { useAbcStore } from "@/store/abcStore"
+import { useDocFlowStore } from "@/store/DocFlowStore"
 import GenerateDocumentDialog from "@Components/documents/GenerateDocumentDialog"
 import type { DocTemplate } from "@Types/types"
 
@@ -59,8 +59,8 @@ function Metric({
 }
 
 const Dashboard = () => {
-  const templates = useAbcStore((s) => s.templates)
-  const documents = useAbcStore((s) => s.documents)
+  const templates = useDocFlowStore((s) => s.templates)
+  const documents = useDocFlowStore((s) => s.documents)
   const [genTarget, setGenTarget] = useState<DocTemplate | null>(null)
 
   const draftCount = documents.filter((d) => d.status === "Draft").length

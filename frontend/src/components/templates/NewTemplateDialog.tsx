@@ -16,18 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@Components/ui/Select"
-import { useAbcStore } from "@/store/abcStore"
-import type { TemplateCategory, TemplateField } from "@Types/types"
+import { useDocFlowStore } from "@/store/DocFlowStore"
+import type { TemplateCategory, TemplateField } from "@Types/types.ts"
 
 const CATEGORIES: TemplateCategory[] = ["Invoice", "Letter", "Report", "Other"]
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/(^_|_$)/g, "")
-}
+const newField = (): TemplateField => ({
+  key: crypto.randomUUID(),
+  label: "",
+  type: "text",
+})
 
 interface Props {
   open: boolean
@@ -35,17 +33,17 @@ interface Props {
 }
 
 export function NewTemplateDialog({ open, onOpenChange }: Props) {
-  const addTemplate = useAbcStore((s) => s.addTemplate)
+  const addTemplate = useDocFlowStore((s) => s.addTemplate)
   const [name, setName] = useState("")
   const [category, setCategory] = useState<TemplateCategory>("Invoice")
   const [description, setDescription] = useState("")
-  const [fields, setFields] = useState<TemplateField[]>([{ key: "", label: "", type: "text" }])
+  const [fields, setFields] = useState<TemplateField[]>([newField()])
 
   const reset = () => {
     setName("")
     setCategory("Invoice")
     setDescription("")
-    setFields([{ key: "", label: "", type: "text" }])
+    setFields([newField()])
   }
 
   const handleCreate = () => {
@@ -54,12 +52,7 @@ export function NewTemplateDialog({ open, onOpenChange }: Props) {
       name,
       category,
       description,
-      fields: fields
-        .filter((f) => f.label.trim())
-        .map((f) => ({
-          ...f,
-          key: f.key.trim() || slugify(f.label),
-        })),
+      fields: fields.filter((f) => f.label.trim()),
     })
     reset()
     onOpenChange(false)
@@ -104,25 +97,25 @@ export function NewTemplateDialog({ open, onOpenChange }: Props) {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setFields((f) => [...f, { key: "", label: "", type: "text" }])}
+              onClick={() => setFields((f) => [...f, newField()])}
             >
               <Plus className="size-3.5" /> Add field
             </Button>
           </div>
-          {fields.map((f, i) => (
-            <div key={i} className="flex gap-2">
+          {fields.map((f) => (
+            <div key={f.key} className="flex gap-2">
               <Input
                 className="flex-2"
                 value={f.label}
                 onChange={(e) =>
-                  setFields((fl) => fl.map((x, idx) => (idx === i ? { ...x, label: e.target.value } : x)))
+                  setFields((fl) => fl.map((x) => (x.key === f.key ? { ...x, label: e.target.value } : x)))
                 }
                 placeholder="Field label"
               />
               <Select
                 value={f.type}
                 onValueChange={(v) =>
-                  setFields((fl) => fl.map((x, idx) => (idx === i ? { ...x, type: v as "text" | "date" } : x)))
+                  setFields((fl) => fl.map((x) => (x.key === f.key ? { ...x, type: v as "text" | "date" } : x)))
                 }
               >
                 <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
@@ -135,7 +128,7 @@ export function NewTemplateDialog({ open, onOpenChange }: Props) {
                 type="button"
                 variant="ghost"
                 size="icon"
-                onClick={() => setFields((fl) => fl.filter((_, idx) => idx !== i))}
+                onClick={() => setFields((fl) => fl.filter((x) => x.key !== f.key))}
               >
                 <Trash2 className="size-4" />
               </Button>
@@ -145,7 +138,7 @@ export function NewTemplateDialog({ open, onOpenChange }: Props) {
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleCreate} disabled={!name.trim()}>Create template</Button>
+          <Button onClick={handleCreate}>Create template</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
