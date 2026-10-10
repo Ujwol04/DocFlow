@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -16,12 +16,17 @@ import {
   FormMessage,
 } from "@Components/ui/Form"
 import { useAuth } from "@Hooks/useAuth"
-import { Link } from "react-router-dom"
 
 const signupSchema = yup.object({
   name: yup.string().min(2, "Enter your full name").required("Name is required"),
   email: yup.string().email("Enter a valid email address").required("Email is required"),
-  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  password: yup
+    .string()
+    .min(8, "At least 8 characters")
+    .matches(/[A-Z]/, "Include an uppercase letter")
+    .matches(/[a-z]/, "Include a lowercase letter")
+    .matches(/[0-9]/, "Include a number")
+    .required("Password is required"),
 })
 
 type SignupValues = yup.InferType<typeof signupSchema>
@@ -41,8 +46,13 @@ export default function Signup() {
     try {
       await register(values.name, values.email, values.password)
       navigate("/dashboard", { replace: true })
-    } catch {
-      setFormError("Something went wrong. Please try again.")
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : ""
+      setFormError(
+        msg === "EMAIL_EXISTS"
+          ? "An account with this email already exists."
+          : "Something went wrong. Please try again."
+      )
     }
   }
 
@@ -99,6 +109,9 @@ export default function Signup() {
                     <FormControl>
                       <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
                     </FormControl>
+                    <p className="text-xs text-muted-foreground">
+                      At least 8 characters, with an uppercase letter, a lowercase letter, and a number.
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -126,10 +139,6 @@ export default function Signup() {
           <Link to="/login" className="font-medium text-foreground hover:underline">
             Sign in
           </Link>
-        </p>
-
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          Demo mode — any name, valid-looking email, and a 6+ character password will create an account.
         </p>
       </div>
     </div>

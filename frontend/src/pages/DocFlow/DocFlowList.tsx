@@ -10,21 +10,21 @@ import {
   TableHead,
   TableCell,
 } from "@Components/ui/Table"
-import { useAbcRecordStore } from "@/store/ABCRecordStore"
+import { useDocFlowRecordStore } from "@/store/DocFlowRecordStore"
 
-export default function AbcList() {
+export default function DocFlowList() {
   const navigate = useNavigate()
-  const records = useAbcRecordStore((s) => s.records)
-  const deleteRecord = useAbcRecordStore((s) => s.deleteRecord)
+  const records = useDocFlowRecordStore((s) => s.records)
+  const deleteRecord = useDocFlowRecordStore((s) => s.deleteRecord)
 
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
-        title="ABC Records"
-        description="Manage your ABC entries"
+        title="DocFlow Records"
+        description="Manage your DocFlow entries"
         icon={<ListChecks className="size-5" />}
         action={
-          <Button onClick={() => navigate("/abc/create")}>
+          <Button onClick={() => navigate("/DocFlow/create")}>
             <Plus className="size-4" /> New
           </Button>
         }
@@ -49,7 +49,7 @@ export default function AbcList() {
                     <Button
                       size="icon-sm"
                       variant="outline"
-                      onClick={() => navigate(`/abc/update/${r.id}`)}
+                      onClick={() => navigate(`/DocFlow/update/${r.id}`)}
                     >
                       <Pencil className="size-3.5" />
                     </Button>

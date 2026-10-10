@@ -20,8 +20,7 @@ import {
   TableHead,
   TableCell,
 } from "@Components/ui/Table"
-import { useAbcStore } from "@/store/abcStore"
-import NewTemplateDialog from "@Components/templates/NewTemplateDialog"
+import { useDocFlowStore } from "@/store/DocFlowStore"
 import GenerateDocumentDialog from "@Components/documents/GenerateDocumentDialog"
 import type { DocTemplate, TemplateCategory } from "@Types/types"
 
@@ -29,11 +28,10 @@ const CATEGORIES: TemplateCategory[] = ["Invoice", "Letter", "Report", "Other"]
 
 export default function Templates() {
   const navigate = useNavigate()
-  const templates = useAbcStore((s) => s.templates)
-  const duplicateTemplate = useAbcStore((s) => s.duplicateTemplate)
-  const deleteTemplate = useAbcStore((s) => s.deleteTemplate)
+  const templates = useDocFlowStore((s) => s.templates)
+  const duplicateTemplate = useDocFlowStore((s) => s.duplicateTemplate)
+  const deleteTemplate = useDocFlowStore((s) => s.deleteTemplate)
 
-  const [showNew, setShowNew] = useState(false)
   const [genTarget, setGenTarget] = useState<DocTemplate | null>(null)
   const [category, setCategory] = useState<string>("all")
   const [query, setQuery] = useState("")
@@ -65,7 +63,7 @@ export default function Templates() {
             </Button>
 
             <Button
-              onClick={() => setShowNew(true)}
+              onClick={() => navigate("/templates/new")}
               className="h-11 rounded-xl bg-[#181818] px-6 font-semibold text-white hover:bg-black dark:bg-blue-600 dark:hover:bg-blue-500"
             >
               <Plus className="size-4" />
@@ -150,7 +148,6 @@ export default function Templates() {
           <div className="px-4 py-8 text-center text-sm text-muted-foreground">No templates match your filters.</div>
         )}
       </div>
-      <NewTemplateDialog open={showNew} onOpenChange={setShowNew} />
       <GenerateDocumentDialog template={genTarget} onOpenChange={(open) => !open && setGenTarget(null)} />
     </div>
   )

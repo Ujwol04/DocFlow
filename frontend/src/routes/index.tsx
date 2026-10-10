@@ -4,11 +4,12 @@ import RequireAuth from "@Components/common/RequireAuth"
 import Login from "@/pages/Login/Login"
 import Dashboard from "@/pages/Dashboard"
 import Templates from "@/pages/Templates/Templates"
+import NewTemplate from "@/pages/Templates/NewTemplate"
 import EditTemplate from "@/pages/Templates/EditTemplate"
 import Documents from "@/pages/Document/Documents"
-import AbcList from "@/pages/ABC/ABCList"
-import CreateABC from "@/pages/ABC/create"
-import UpdateABC from "@/pages/ABC/update"
+import DocFlowList from "@/pages/DocFlow/DocFlowList"
+import CreateDocFlow from "@/pages/DocFlow/create"
+import UpdateDocFlow from "@/pages/DocFlow/update"
 import ChangePassword from "@/pages/ChangePassword/password"
 import ActivityLog from "@/pages/ActivityLog/log"
 import Signup from "@/pages/Signup/Signup"
@@ -27,11 +28,12 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="/dashboard" replace /> },
           { path: "dashboard", element: <Dashboard /> },
           { path: "templates", element: <Templates /> },
+          { path: "templates/new", element: <NewTemplate /> },
           { path: "templates/:id/edit", element: <EditTemplate /> },
           { path: "documents", element: <Documents /> },
-          { path: "abc", element: <AbcList /> },
-          { path: "abc/create", element: <CreateABC /> },
-          { path: "abc/update/:id", element: <UpdateABC /> },
+          { path: "DocFlow", element: <DocFlowList /> },
+          { path: "DocFlow/create", element: <CreateDocFlow /> },
+          { path: "DocFlow/update/:id", element: <UpdateDocFlow /> },
           { path: "change-password", element: <ChangePassword /> },
           { path: "activity-log", element: < ActivityLog /> },
         ],

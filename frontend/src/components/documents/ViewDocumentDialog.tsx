@@ -1,7 +1,7 @@
 import type { GeneratedDocument } from "@Types/types"
 
 const LETTERHEAD = {
-  name: "ABC",
+  name: "DocFlow",
   tagline: "Reusable documents with dynamic fields",
   address: "Kathmandu, Nepal",
 }

@@ -4,25 +4,25 @@ import PageHeader from "@Components/common/PageHeader"
 import { Button } from "@Components/ui/Button"
 import { Input } from "@Components/ui/Input"
 import { FilePlus } from "lucide-react"
-import { useAbcRecordStore } from "@/store/ABCRecordStore"
+import { useDocFlowRecordStore } from "@/store/DocFlowRecordStore"
 
-export default function CreateABC() {
+export default function CreateDocFlow() {
   const navigate = useNavigate()
-  const addRecord = useAbcRecordStore((s) => s.addRecord)
+  const addRecord = useDocFlowRecordStore((s) => s.addRecord)
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
 
   const handleCreate = () => {
     if (!name.trim()) return
     addRecord({ name, description })
-    navigate("/abc")
+    navigate("/DocFlow")
   }
 
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
-        title="Create ABC"
-        description="Add a new ABC record"
+        title="Create DocFlow"
+        description="Add a new DocFlow record"
         icon={<FilePlus className="size-5" />}
       />
 
@@ -43,7 +43,7 @@ export default function CreateABC() {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate("/abc")}>Cancel</Button>
+          <Button variant="outline" onClick={() => navigate("/DocFlow")}>Cancel</Button>
           <Button onClick={handleCreate}>Create</Button>
         </div>
       </div>

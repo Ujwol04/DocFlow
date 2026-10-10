@@ -52,7 +52,7 @@ const initialDocuments: GeneratedDocument[] = [
   { id: "DOC-0029", title: "Invoice - Barrow Textiles", templateId: "t1", status: "Draft", date: "2026-08-09", values: {} },
 ]
 
-type AbcStore = {
+type DocFlowStore = {
   templates: DocTemplate[]
   documents: GeneratedDocument[]
   addTemplate: (t: Omit<DocTemplate, "id" | "uses" | "updatedAt">) => void
@@ -67,7 +67,7 @@ type AbcStore = {
   deleteDocument: (id: string) => void
 }
 
-export const useAbcStore = create<AbcStore>((set, get) => ({
+export const useDocFlowStore = create<DocFlowStore>((set, get) => ({
   templates: initialTemplates,
   documents: initialDocuments,
 

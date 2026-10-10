@@ -326,7 +326,7 @@ export interface GeneratedDocument {
   values: Record<string, string>;
 }
 
-export interface AbcRecord {
+export interface DocFlowRecord {
   id: string;
   name: string;
   description: string;

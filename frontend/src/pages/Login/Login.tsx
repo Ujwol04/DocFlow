@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, useLocation , Link } from "react-router-dom"
+import { useNavigate, useLocation, Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
@@ -19,7 +19,7 @@ import { useAuth } from "@Hooks/useAuth"
 
 const loginSchema = yup.object({
   email: yup.string().email("Enter a valid email address").required("Email is required"),
-  password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  password: yup.string().required("Password is required"),
 })
 
 type LoginValues = yup.InferType<typeof loginSchema>
@@ -42,8 +42,15 @@ export default function Login() {
     try {
       await login(values.email, values.password)
       navigate(redirectTo, { replace: true })
-    } catch {
-      setFormError("Something went wrong. Please try again.")
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : ""
+      if (msg.startsWith("LOCKED:")) {
+        setFormError(`Too many attempts. Try again in ${msg.split(":")[1]} seconds.`)
+      } else if (msg === "INVALID_CREDENTIALS") {
+        setFormError("Incorrect email or password.")
+      } else {
+        setFormError("Something went wrong. Please try again.")
+      }
     }
   }
 
@@ -116,15 +123,12 @@ export default function Login() {
             </form>
           </Form>
         </div>
-         <p className="mt-6 text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
-             <Link to="/signup" className="font-medium text-foreground hover:underline">
-               Sign up
-              </Link>
-              </p>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Demo mode — any valid-looking email and a 6+ character password will sign you in.
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Don't have an account?{" "}
+          <Link to="/signup" className="font-medium text-foreground hover:underline">
+            Sign up
+          </Link>
         </p>
       </div>
     </div>
