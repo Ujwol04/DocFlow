@@ -91,13 +91,12 @@ export default function Login() {
                   <FormItem>
                     <div className="flex items-center justify-between">
                       <FormLabel>Password</FormLabel>
-                      <button
-                        type="button"
+                      <Link
+                        to="/forgot-password"
                         className="text-xs font-medium text-muted-foreground hover:text-foreground"
-                        onClick={() => alert("Password reset isn't wired up yet.")}
                       >
                         Forgot password?
-                      </button>
+                      </Link>
                     </div>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />

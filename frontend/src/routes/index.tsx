@@ -13,10 +13,12 @@ import UpdateDocFlow from "@/pages/DocFlow/update"
 import ChangePassword from "@/pages/ChangePassword/password"
 import ActivityLog from "@/pages/ActivityLog/log"
 import Signup from "@/pages/Signup/Signup"
+import ForgotPassword from "@/pages/ForgotPassword/ForgotPassword"
 
 export const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/forgot-password", element: <ForgotPassword /> },
   {
     path: "/",
     element: <RequireAuth />,
@@ -35,7 +37,7 @@ export const router = createBrowserRouter([
           { path: "DocFlow/create", element: <CreateDocFlow /> },
           { path: "DocFlow/update/:id", element: <UpdateDocFlow /> },
           { path: "change-password", element: <ChangePassword /> },
-          { path: "activity-log", element: < ActivityLog /> },
+          { path: "activity-log", element: <ActivityLog /> },
         ],
       },
     ],

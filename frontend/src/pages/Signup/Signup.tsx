@@ -35,6 +35,8 @@ export default function Signup() {
   const { register } = useAuth()
   const navigate = useNavigate()
   const [formError, setFormError] = useState("")
+  const [recoveryCode, setRecoveryCode] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   const form = useForm<SignupValues>({
     resolver: yupResolver(signupSchema),
@@ -44,8 +46,8 @@ export default function Signup() {
   const onSubmit = async (values: SignupValues) => {
     setFormError("")
     try {
-      await register(values.name, values.email, values.password)
-      navigate("/dashboard", { replace: true })
+      const code = await register(values.name, values.email, values.password)
+      setRecoveryCode(code)
     } catch (err) {
       const msg = err instanceof Error ? err.message : ""
       setFormError(
@@ -54,6 +56,51 @@ export default function Signup() {
           : "Something went wrong. Please try again."
       )
     }
+  }
+
+  const copyCode = async () => {
+    if (!recoveryCode) return
+    try {
+      await navigator.clipboard.writeText(recoveryCode)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  if (recoveryCode) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="w-full max-w-sm">
+          <div className="mb-8 flex flex-col items-center gap-3 text-center">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-foreground text-background">
+              <FileText className="size-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-foreground">Save your recovery code</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                You will need it if you forget your password
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6">
+            <p className="text-sm text-muted-foreground">
+              This code is shown only once and cannot be recovered later. Store it somewhere safe.
+            </p>
+            <div className="rounded-lg border border-border bg-muted px-3 py-3 text-center font-mono text-lg tracking-wider text-foreground">
+              {recoveryCode}
+            </div>
+            <Button type="button" variant="outline" onClick={copyCode}>
+              {copied ? "Copied" : "Copy code"}
+            </Button>
+            <Button type="button" onClick={() => navigate("/dashboard", { replace: true })}>
+              I've saved it, continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
